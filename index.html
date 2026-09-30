@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Monster</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4facfe, #6a5acd);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .game {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            color: #222;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 38px;
+            color: #6a5acd;
+        }
+
+        .subtitle {
+            color: #777;
+            margin: 5px 0 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            flex: 1;
+            padding: 12px;
+            background: #f1f3ff;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .battle {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #f8f8ff;
+            border-radius: 20px;
+            padding: 20px 10px;
+            margin-bottom: 20px;
+        }
+
+        .character {
+            font-size: 80px;
+        }
+
+        .monster {
+            animation: float 1.5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .heart {
+            color: #e74c3c;
+            font-size: 22px;
+            letter-spacing: 3px;
+        }
+
+        .question {
+            font-size: 42px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .answer {
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            background: #6a5acd;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .answer:hover {
+            background: #5848c2;
+            transform: scale(1.03);
+        }
+
+        .answer:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .correct {
+            background: #2ecc71 !important;
+        }
+
+        .wrong {
+            background: #e74c3c !important;
+        }
+
+        .message {
+            min-height: 35px;
+            margin: 15px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .start {
+            margin-top: 20px;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 12px;
+            background: #ff9800;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start:hover {
+            background: #f57c00;
+        }
+
+        .difficulty {
+            margin: 15px 0;
+        }
+
+        .difficulty select {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .character {
+                font-size: 60px;
+            }
+
+            .question {
+                font-size: 34px;
+            }
+
+            .answer {
+                font-size: 20px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <h1>👾 Math Monster</h1>
+
+    <div class="subtitle">
+        Answer correctly and defeat the monster!
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            ⭐ Score
+            <br>
+            <span id="score">0</span>
+        </div>
+
+        <div class="stat">
+            ❤️ Lives
+            <br>
+            <span id="lives">❤️❤️❤️</span>
+        </div>
+
+        <div class="stat">
+            🏆 Level
+            <br>
+            <span id="level">1</span>
+        </div>
+
+    </div>
+
+
+    <div class="battle">
+
+        <div>
+            <div class="character">🧒</div>
+            <div>Hero</div>
+        </div>
+
+        <div style="font-size:30px;">
+            ⚔️
+        </div>
+
+        <div>
+            <div class="character monster" id="monster">
+                👾
+            </div>
+
+            <div>
+                Monster
+            </div>
+
+            <div class="heart" id="monsterHealth">
+                ❤️❤️❤️❤️❤️
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="difficulty">
+
+        <label>
+            Difficulty:
+            <select id="difficulty">
+
+                <option value="easy">
+                    Easy — Addition & Subtraction
+                </option>
+
+                <option value="medium">
+                    Medium — Multiplication
+                </option>
+
+                <option value="hard">
+                    Hard — Mixed Math
+                </option>
+
+            </select>
+        </label>
+
+    </div>
+
+
+    <div id="gameArea" class="hidden">
+
+        <div class="question" id="question">
+            5 + 3 = ?
+        </div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="message" id="message"></div>
+
+    </div>
+
+
+    <button class="start" id="startButton" onclick="startGame()">
+        🚀 Start Game
+    </button>
+
+</div>
+
+
+<script>
+
+let score = 0;
+let lives = 3;
+let level = 1;
+let monsterHealth = 5;
+
+let correctAnswer = 0;
+let gameActive = false;
+
+
+// Elements
+
+const scoreElement = document.getElementById("score");
+const livesElement = document.getElementById("lives");
+const levelElement = document.getElementById("level");
+
+const questionElement = document.getElementById("question");
+const answersElement = document.getElementById("answers");
+const messageElement = document.getElementById("message");
+
+const monsterHealthElement =
+    document.getElementById("monsterHealth");
+
+const monsterElement =
+    document.getElementById("monster");
+
+const gameArea =
+    document.getElementById("gameArea");
+
+
+// Start Game
+
+function startGame() {
+
+    score = 0;
+    lives = 3;
+    level = 1;
+    monsterHealth = 5;
+
+    gameActive = true;
+
+    scoreElement.textContent = score;
+    levelElement.textContent = level;
+
+    updateLives();
+    updateMonsterHealth();
+
+    gameArea.classList.remove("hidden");
+
+    document.getElementById("startButton").textContent =
+        "🔄 Restart Game";
+
+    messageElement.textContent = "";
+
+    generateQuestion();
+}
+
+
+// Generate Question
+
+function generateQuestion() {
+
+    if (!gameActive) return;
+
+    answersElement.innerHTML = "";
+
+    const difficulty =
+        document.getElementById("difficulty").value;
+
+    let num1;
+    let num2;
+    let operation;
+
+    if (difficulty === "easy") {
+
+        num1 = randomNumber(1, 20);
+        num2 = randomNumber(1, 20);
+
+        operation =
+            Math.random() < 0.5 ? "+" : "-";
+
+        // Avoid negative answers
+        if (operation === "-" && num2 > num1) {
+            [num1, num2] = [num2, num1];
+        }
+
+    }
+
+    else if (difficulty === "medium") {
+
+        num1 = randomNumber(2, 12);
+        num2 = randomNumber(2, 12);
+
+        operation = "×";
+
+    }
+
+    else {
+
+        num1 = randomNumber(1, 20);
+        num2 = randomNumber(1, 15);
+
+        const operations = ["+", "-", "×"];
+
+        operation =
+            operations[
+                randomNumber(0, operations.length - 1)
+            ];
+
+        if (operation === "-" && num2 > num1) {
+            [num1, num2] = [num2, num1];
+        }
+    }
+
+
+    // Calculate Answer
+
+    if (operation === "+") {
+        correctAnswer = num1 + num2;
+    }
+
+    else if (operation === "-") {
+        correctAnswer = num1 - num2;
+    }
+
+    else {
+        correctAnswer = num1 * num2;
+    }
+
+
+    questionElement.textContent =
+        `${num1} ${operation} ${num2} = ?`;
+
+
+    // Create Answers
+
+    let answers = [correctAnswer];
+
+
+    while (answers.length < 4) {
+
+        let wrongAnswer =
+            correctAnswer +
+            randomNumber(-10, 10);
+
+        if (
+            wrongAnswer >= 0 &&
+            !answers.includes(wrongAnswer)
+        ) {
+            answers.push(wrongAnswer);
+        }
+    }
+
+
+    // Shuffle
+
+    answers.sort(() => Math.random() - 0.5);
+
+
+    // Display Buttons
+
+    answers.forEach(answer => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "answer";
+
+        button.textContent = answer;
+
+        button.onclick = () =>
+            checkAnswer(answer, button);
+
+        answersElement.appendChild(button);
+
+    });
+
+}
+
+
+// Check Answer
+
+function checkAnswer(answer, clickedButton) {
+
+    if (!gameActive) return;
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+
+
+    if (answer === correctAnswer) {
+
+        clickedButton.classList.add("correct");
+
+        score += 10;
+
+        monsterHealth--;
+
+        messageElement.textContent =
+            "🎉 Correct! Hit the monster!";
+
+        messageElement.style.color = "#2ecc71";
+
+        scoreElement.textContent = score;
+
+        updateMonsterHealth();
+
+
+        // Monster defeated
+
+        if (monsterHealth <= 0) {
+
+            level++;
+
+            monsterHealth = 5;
+
+            levelElement.textContent = level;
+
+            messageElement.textContent =
+                "💥 Monster defeated! New level!";
+
+            monsterElement.textContent = "😵";
+
+            setTimeout(() => {
+                monsterElement.textContent = "👾";
+                generateQuestion();
+            }, 900);
+
+        } else {
+
+            setTimeout(generateQuestion, 700);
+
+        }
+
+    }
+
+    else {
+
+        clickedButton.classList.add("wrong");
+
+        lives--;
+
+        updateLives();
+
+        messageElement.textContent =
+            "❌ Wrong answer! Try again!";
+
+        messageElement.style.color = "#e74c3c";
+
+
+        // Show correct answer
+
+        buttons.forEach(button => {
+
+            if (
+                Number(button.textContent) ===
+                correctAnswer
+            ) {
+                button.classList.add("correct");
+            }
+
+        });
+
+
+        if (lives <= 0) {
+
+            setTimeout(gameOver, 800);
+
+        } else {
+
+            setTimeout(generateQuestion, 1000);
+
+        }
+
+    }
+
+}
+
+
+// Update Lives
+
+function updateLives() {
+
+    livesElement.textContent =
+        "❤️".repeat(lives) +
+        "🖤".repeat(3 - lives);
+
+}
+
+
+// Update Monster Health
+
+function updateMonsterHealth() {
+
+    monsterHealthElement.textContent =
+        "❤️".repeat(monsterHealth) +
+        "🖤".repeat(5 - monsterHealth);
+
+}
+
+
+// Game Over
+
+function gameOver() {
+
+    gameActive = false;
+
+    questionElement.textContent =
+        "Game Over!";
+
+    answersElement.innerHTML = "";
+
+    messageElement.textContent =
+        `🏆 Final Score: ${score}`;
+
+    messageElement.style.color = "#6a5acd";
+
+    monsterElement.textContent = "😈";
+
+}
+
+
+// Random Number
+
+function randomNumber(min, max) {
+
+    return Math.floor(
+        Math.random() * (max - min + 1)
+    ) + min;
+
+}
+
+</script>
+
+</body>
+</html>
